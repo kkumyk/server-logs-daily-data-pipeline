@@ -1,0 +1,6 @@
+google_credentials.json
+kestra/.env_encoded
+heroku_logs
+.terraform
+.terraform.lock.hcl
+terraform*
