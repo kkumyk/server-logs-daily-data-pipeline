@@ -20,7 +20,7 @@ Why looking at the contents of your site’s server logs? How this data pipeline
 
 - Frequevency: updated daily.
 
-## Main Objective
+## Main Objectives
 
 1. Select a dataset.
 2. Create a pipeline for processing this dataset and putting it to a data warehouse (BigQuery).
