@@ -89,6 +89,14 @@ Or ideally download Terraform from the Synaptic Package Manager (if on Ubuntu) a
 [Terraform Installation on Linux/Ubuntu Instructions](https://github.com/kkumyk/data-engineering-zoomcamp/blob/main/1_intro_to_data_engineering/1_README.md#creating-gcp-project-infrastructure-with-terraform)
 
 
+variables.tf
+
+- add your project ID:
+```tf
+variable "project" {
+  description = "ADD-YOUR-PROJECT-ID_HERE"
+}
+```
 After following the commands below you should see "server_logs_bucket" in GCS and "server_logs_data" dataset in BigQuery.
 ```bash
 # Refresh service-account's auth-token for this session:
