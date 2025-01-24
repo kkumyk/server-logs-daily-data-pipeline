@@ -1,0 +1,46 @@
+id: 00_gcp_kv
+namespace: logfile_analysis_pipeline
+
+tasks:
+  - id: gcp_creds
+    type: io.kestra.plugin.core.kv.Set
+    key: GCP_CREDS
+    kvType: JSON
+     value: | # replace the below with the service account credentials
+      {
+        "type": "...",
+        "project_id": "...",
+        "private_key_id": "...",
+        "private_key": "...",
+        "client_email": "...",
+        "client_id": "...",
+        "auth_uri": "...",
+        "token_uri": "...",
+        "auth_provider_x509_cert_url": "...",
+        "client_x509_cert_url": "...",
+        "universe_domain": "...",
+      }
+
+  - id: gcp_project_id
+    type: io.kestra.plugin.core.kv.Set
+    key: GCP_PROJECT_ID
+    kvType: STRING
+    value: # TODO replace with your project id
+
+  - id: gcp_location
+    type: io.kestra.plugin.core.kv.Set
+    key: GCP_LOCATION
+    kvType: STRING
+    value: europe-west2 # replace according to your location
+
+  - id: gcp_bucket_name
+    type: io.kestra.plugin.core.kv.Set
+    key: GCP_BUCKET_NAME
+    kvType: STRING
+    value: server_logs_bucket
+
+  - id: gcp_dataset
+    type: io.kestra.plugin.core.kv.Set
+    key: GCP_DATASET
+    kvType: STRING
+    value: server_logs_data
