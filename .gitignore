@@ -1,5 +1,4 @@
 terraform/.terraform*
 terraform.tfstate.backup
 terraform.tfstate
-kestra/flows/00_gcp_kv.yaml
-kestra/flows/00_gcp_kv_add_your_values.yaml
+00_gcp_kv_add_VALUES.yaml
