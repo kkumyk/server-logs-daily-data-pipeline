@@ -3,7 +3,7 @@ locals {
 }
 
 variable "project" {
-  description = "log-analysis-pipeline-448011"
+  description = "ADD-YOUR-PROJECT-ID_HERE"
 }
 
 variable "region" {
