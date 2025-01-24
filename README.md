@@ -19,7 +19,6 @@ Why looking at the contents of your site’s server logs? How this data pipeline
 ## Dataset Description
 
 - Frequevency: updated daily.
-- Format:
 
 ## Main Objective
 
