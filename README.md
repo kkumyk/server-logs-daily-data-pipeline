@@ -1,7 +1,25 @@
+<!-- vscode-markdown-toc -->
+* 1. [Problem Statement](#ProblemStatement)
+* 2. [Dataset Description](#DatasetDescription)
+* 3. [Main Objectives](#MainObjectives)
+* 4. [Technologies](#Technologies)
+* 5. [Prerequisites](#Prerequisites)
+* 6. [Create GCP Project Infrastructure with Terraform](#CreateGCPProjectInfrastructurewithTerraform)
+	* 6.1. [Local Setup for GCP](#LocalSetupforGCP)
+	* 6.2. [Terraform Installation](#TerraformInstallation)
+		* 6.2.1. [Ubuntu](#Ubuntu)
+* 7. [Run Docker Compose Container](#RunDockerComposeContainer)
+* 8. [Log File Analysis Examples](#LogFileAnalysisExamples)
+
+<!-- vscode-markdown-toc-config
+	numbering=true
+	autoSave=true
+	/vscode-markdown-toc-config -->
+<!-- /vscode-markdown-toc -->
 # Server Log Files Analysis | Data Pipeline
 This is a capstone project built as a part of the [Data Engineering Zoomcamp](https://github.com/DataTalksClub/data-engineering-zoomcamp)'s assignment.
 
-## Problem Statement
+##  1. <a name='ProblemStatement'></a>Problem Statement
 Server Log files help to provide insights into how search engine crawlers navigate a website.
 Typically, these files include:
 
@@ -15,12 +33,12 @@ Typically, these files include:
 
 Why looking at the contents of your site’s server logs? How this data pipeline can be used by SEO specialist? 
  
-## Dataset Description
+##  2. <a name='DatasetDescription'></a>Dataset Description
 - Server logs data from a [site hosted on Heroku](https://kabardian-poems-collection-b906b8b63b33.herokuapp.com/), avaliable via [GitHub](https://github.com/kkumyk/heroku_access_log_files/releases/tag/v1.0.0).
 
 - Frequevency of data extraction: daily.
 
-## Main Objectives
+##  3. <a name='MainObjectives'></a>Main Objectives
 
 Create an ELT data pipeline for processing server logs data inluding:
 
@@ -33,16 +51,16 @@ Finally, the processed data will be presented in a Looker dashboard.
 <hr>
 
 
-## Technologies
+##  4. <a name='Technologies'></a>Technologies
 - Infrastracture: <strong>Terraform</strong>
 - Containerization: <strong>Docker</strong>
 - Workflow orchestration: <strong>Kestra</strong>
 - Data Storage: <strong>Google Cloud Platform</strong>
 - Data Warehouse: <strong>BigQuery</strong>
 - Transformations: <strong>dbt cloud</strong>
-- Dashboard: <strong>Looker Studio</strong>
+- BI tools: <strong>Looker Studio</strong>
 
-## Prerequisites
+##  5. <a name='Prerequisites'></a>Prerequisites
 
 Install Docker Engine and Docker Desktop on Ubuntu 24.04
 
@@ -67,7 +85,7 @@ psql (PostgreSQL) 16.6 (Ubuntu 16.6-0ubuntu0.24.04.1)
 # install CLI for Postgres
 pgcli -v # Version: 4.0.1
 ```
-## Create GCP Project Infrastructure with Terraform
+##  6. <a name='CreateGCPProjectInfrastructurewithTerraform'></a>Create GCP Project Infrastructure with Terraform
 
 The infrastructure we need consists of:
 
@@ -76,7 +94,7 @@ The infrastructure we need consists of:
 
 See full indtallation instructions [here](https://github.com/kkumyk/data-engineering-zoomcamp/blob/main/1_intro_to_data_engineering/1_README.md#creating-gcp-project-infrastructure-with-terraform).
 
-### Local Setup for GCP
+###  6.1. <a name='LocalSetupforGCP'></a>Local Setup for GCP
 
 - Create a project
   - setup a new project and write down:
@@ -90,9 +108,9 @@ See full indtallation instructions [here](https://github.com/kkumyk/data-enginee
   ```bash
   export GOOGLE_APPLICATION_CREDENTIALS="url/to/your/key.json"
   ```
-### Terraform Installation 
+###  6.2. <a name='TerraformInstallation'></a>Terraform Installation 
 
-#### Ubuntu
+####  6.2.1. <a name='Ubuntu'></a>Ubuntu
 When installing Terraform, either follow the instructions by downloading the binaries and adding them to path. Or ideally download Terraform from the Synaptic Package Manager and there will be no need to add it to the path.
 
 [Terraform Installation on Linux/Ubuntu Instructions](https://github.com/kkumyk/data-engineering-zoomcamp/blob/main/1_intro_to_data_engineering/1_README.md#creating-gcp-project-infrastructure-with-terraform)
@@ -120,7 +138,7 @@ terraform plan
 terraform apply
 ```
 
-## Run Docker Compose Container
+##  7. <a name='RunDockerComposeContainer'></a>Run Docker Compose Container
 
 ```bash
 # change to the folder that includes your docker-compose.yaml file
@@ -138,7 +156,83 @@ sudo docker compose up -d
 # go to Triggers > "Backfill executions" > select the start date > "Execute backfills"
 ```
 
-### Log File Analysis Examples
+## DBT
+
+### Prerequisites
+
+Create 2 new empty datasets for your project in BigQuery:
+- a development dataset, e.g.: <i>dbt_dev</i>
+- a production dataset, e.g.: <i>dbt_prod</i>
+
+<strong>Note:</strong> Make sure you select your region in accordance with the selected region of your entire project.
+
+### Setting Up dbt
+
+1. [Create a dbt user account](https://www.getdbt.com/signup) or [log in](https://cloud.getdbt.com/login) into the existing one.
+2. Set up a GitHub repo for your project.
+3. Connect dbt to BigQuery development dataset and to the Github repo by following ["How to setup dbt cloud with bigquery" instructions](https://github.com/kkumyk/data-engineering-zoomcamp/blob/main/4_analytics_engineering/4_README.md#setting-up-dbt).
+<strong>Note:</strong> The steps for the current service account creation have slightly changed. E.g.: before you can actually create a new service account you will be first asked if you would like to re-use an existing one if such is already there. In this case, press "Continue" to land on a form to set up a new service account by proving your "Service account details".
+  - add service account name, e.g.: <i>dbt-service-account</i>
+  - press "create and continue"
+  - in the "Grant this service account access to project" select "BigQuery Admin"
+  - press "Done"
+  - select newly created service account and navigate to its "KEYS" section
+  - select "create new key" and the key type JSON; this will create and download the key file to your pc
+
+### Creating a dbt Cloud Project
+
+To create a dbt Cloud project you will need:
+- access to your data warehouse (BigQuery):
+  - in your dbt project settings adjust Connections/BigQuery by uploading a service account JSON file via the Settings section; it will autopopulate the fields in that section.
+- admin access to your repo, where you will have your dbt project
+
+1. Connect dbt to BigQuery development dataset and to the Github repo by following [these instructions](https://github.com/DataTalksClub/data-engineering-zoomcamp/blob/main/04-analytics-engineering/dbt_cloud_setup.md).
+2. In the IDE windows, press the green Initilize button to create the project files.
+3. Inside dbt_project.yml, change the project name both in:
+  - the name field and
+  - right below the <i>models:</i> block. You may comment or delete the example block at the end.
+
+### Developing <i>log_files_analysis</i> Project
+1. After setting up dbt Cloud account, in the Settings of your project rename the default name to "log_files_analysis".
+2. Inside dbt_project.yml, change the project name both in:
+    - the name field and
+    - right below the <i>models:</i> block. You may comment or delete the example block at the end.
+      ```sql
+      name: 'log_files_analysis' 
+
+      models:
+        log_files_analysis:
+      ```
+3. Under the model folder create two folders:
+    - code
+    - staging
+
+4. In the staging folder create two files:
+  - <strong>schema.yml</strong>, here define:
+    - the database the data will be coming from
+    - the schema
+    - the source table
+    ```yml
+    version: 2
+
+    sources:
+        - name: staging
+          database:  your-BigQuery-dataset-name # your BigQuery data base name
+          schema: log_files_data_all # same as your BigQuery dataset
+
+          tables:
+              - name: daily_data # the partitioned table from your BigQuery dataset that consolidates all daily data
+    ```
+  - <strong>stg_daily_data.sql</strong> will contain:
+
+5. Build your project.
+
+```bash
+dbt build --select stg_daily_data.sql
+```
+
+
+##  8. <a name='LogFileAnalysisExamples'></a>Log File Analysis Examples
 - [Streaming process NASA web access logs on GCP](https://q15928.github.io/2019/06/10/nasa-log-analysis/)
 - [Scalable Log Analytics with Apache Spark — A Comprehensive Case-Study](https://towardsdatascience.com/scalable-log-analytics-with-apache-spark-a-comprehensive-case-study-2be3eb3be977)
 - [Web Log Mining](https://medium.com/@dilshadakhan24/web-log-mining-association-rules-function-model-nasa-web-access-logs-c72eddc26bb4)
