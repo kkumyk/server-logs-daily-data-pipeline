@@ -161,8 +161,8 @@ sudo docker compose up -d
 ### Prerequisites
 
 Create 2 new empty datasets for your project in BigQuery:
-- a development dataset, e.g.: <i>dbt_dev</i>
-- a production dataset, e.g.: <i>dbt_prod</i>
+- a development dataset, e.g.: <i>dbt_dev_env</i>
+- a production dataset, e.g.: <i>dbt_prod_env</i>
 
 <strong>Note:</strong> Make sure you select your region in accordance with the selected region of your entire project.
 
@@ -230,6 +230,42 @@ To create a dbt Cloud project you will need:
 ```bash
 dbt build --select stg_daily_data.sql
 ```
+
+
+For a case of builting a data pipeline using daily data for a newly migrated website, provide suggestions with
+what would be the most useful metrics to report on and how to group the data in the 4th dbt model. Provide the model example
+
+
+Update model #1 stg_daily_data.sql by referencing a macto in it:
+- create a reusable macro to classify requests as bot and human based on user_agent;
+  - e.g.: Mozilla/5.0(compatible;YandexBot/3.0;+http://yandex.com/bots)
+- reference this macro in your model
+- the result of running this model is an updated daily view data with a column referencing the bots vs human flag
+
+Create a seed based model #2:
+- add a seed file, e.g.: a CSV with all existing pages on the site with columns:
+  - page url
+  - page type: category vs regular page
+- create seed based dbt model (all_pages.sql) in the Core folder that will produce a table instead of a view
+
+Create model #3:
+- this model will reference the previously created models and join all data into a single table
+- create a model #3 in the Core folder that will reference:
+  - the staging model #1 - daily data with extra column that splits bots and humans
+  - the seed based model #2 - all avaliable pages on the site with the page categorisation
+  - LEFT JOIN tables on the page url
+
+Create model #4:
+- this model contains the following calculations:
+
+PROVIDE SUGGESTIONS FOR THIS SECTION
+
+
+The Looker dashboard will contain the folloving information in its tables/graphs:
+- 
+PROVIDE SUGGESTIONS FOR THIS SECTION
+
+
 
 
 ##  8. <a name='LogFileAnalysisExamples'></a>Log File Analysis Examples
