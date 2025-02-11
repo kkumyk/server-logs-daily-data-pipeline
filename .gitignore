@@ -3,3 +3,5 @@ terraform.tfstate.backup
 terraform.tfstate
 kestra/flows/00_gcp_kv.yaml
 .env
+output_files
+access_logs
