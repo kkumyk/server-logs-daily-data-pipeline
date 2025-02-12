@@ -38,6 +38,56 @@ Why looking at the contents of your site’s server logs? How this data pipeline
 
 - Frequevency of data extraction: daily.
 
+### Export Logs Periodically with the [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli#install-the-heroku-cli)
+
+1. Setup a Cron Job to Extract Access Logs via Heroku CLI.
+
+2. Use bash script to clean the data and extract the data into CSV files.
+
+    ```bash
+    # make the script executable:
+    chmod +x process_raw_txt.sh
+
+    #  confirm if the file is executable
+    ls -l process_raw_txt.sh
+
+    # run the script
+    bash process_raw_txt.sh
+    ```
+
+3. Load CSV files into Github automatically.
+
+<!-- - Create an initial release:
+  - GitHub > Releases > Create a new release -->
+
+
+  ```bash
+  #!/bin/bash
+
+  # Set variables
+  REPO="your0github-repo"
+  TAG="daily-upload"   # release tag where files will be uploaded
+  CSV_FOLDER="/your-local-folder-with-csvs/"  # path to your local CSV files
+
+  # create release if it doesn't exist
+  if ! gh release view "$TAG" --repo "$REPO" > /dev/null 2>&1; then
+    gh release create "$TAG" --repo "$REPO" --title "Daily CSV Upload" --notes "Automated daily upload"
+  fi
+
+  # Uuload CSV files to the release
+  for file in "$CSV_FOLDER"/*.csv; do
+    echo "Uploading $file to release $TAG..."
+    gh release upload "$TAG" "$file" --repo "$REPO" --clobber
+  done
+
+  echo "Upload complete!"
+  ```
+
+
+
+
+
+
 ##  3. <a name='MainObjectives'></a>Main Objectives
 
 Create an ELT data pipeline for processing server logs data inluding:
@@ -227,14 +277,14 @@ To create a dbt Cloud project you will need:
 
 5. Build your project.
 
-```bash
-dbt build --select stg_daily_data.sql
-```
+  ```bash
+  dbt build --select stg_daily_data.sql
+  ```
 
-
-For a case of builting a data pipeline using daily data for a newly migrated website, provide suggestions with
+For a case of building a data pipeline using daily data for a newly migrated website, provide suggestions with
 what would be the most useful metrics to report on and how to group the data in the 4th dbt model. Provide the model example
 
+<hr>
 
 Update model #1 stg_daily_data.sql by referencing a macto in it:
 - create a reusable macro to classify requests as bot and human based on user_agent;
@@ -242,30 +292,56 @@ Update model #1 stg_daily_data.sql by referencing a macto in it:
 - reference this macro in your model
 - the result of running this model is an updated daily view data with a column referencing the bots vs human flag
 
+<hr>
+
 Create a seed based model #2:
-- add a seed file, e.g.: a CSV with all existing pages on the site with columns:
+
+Add a seed file, e.g.: a CSV with all existing pages on the site with columns:
   - page url
   - page type: category vs regular page
-- create seed based dbt model (all_pages.sql) in the Core folder that will produce a table instead of a view
+
+- create categories_by_page.csv file in dbt cloud under the seeds folder
+- use cat and then copy what’s on my terminal and paste the values into the all_pages.csv file
+```bash
+cd to_the_folder_with_the_all_pages.csv
+cat categories_by_page.csv
+```
+<!-- - add categories.sql to the models/core folder -->
+- run dbt seed by typing <code>dbt seed</code> in the dbt command line
+- after refreshing the tab with the BigQuery you will see a new categories_by_page table that will contain the data from the seed file
+- as we are using the seed file as it is we don't need to create a model for it; simply running <code>dbt seed</code> will create a table in the BigQuery
+<hr>
 
 Create model #3:
-- this model will reference the previously created models and join all data into a single table
-- create a model #3 in the Core folder that will reference:
-  - the staging model #1 - daily data with extra column that splits bots and humans
-  - the seed based model #2 - all avaliable pages on the site with the page categorisation
-  - LEFT JOIN tables on the page url
+
+create seed based dbt model (daily_data_by_page.sql) in the Core folder that will produce a table instead of a view and will contain:
+  - values from the stg_daily_data referencing macro based bot_human_flag
+  - values from the page_categories seed based table
+  - build your project
+    ```bash
+    dbt build --select ddaily_data_by_page.sql
+    ```
+<hr>
+
 
 Create model #4:
-- this model contains the following calculations:
 
-PROVIDE SUGGESTIONS FOR THIS SECTION
-
-
-The Looker dashboard will contain the folloving information in its tables/graphs:
-- 
-PROVIDE SUGGESTIONS FOR THIS SECTION
+- this model contains the following aggregated calculations:
+  - 
 
 
+  - build your project
+    ```bash
+    dbt build --select aggregated_data.sql
+    ```
+
+<hr>
+
+The resulting Looker dashboard will contain the folloving information in its tables/graphs:
+
+
+
+#2d706c - green
 
 
 ##  8. <a name='LogFileAnalysisExamples'></a>Log File Analysis Examples
