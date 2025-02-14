@@ -1,7 +1,7 @@
 # Server Log Files Analysis | Data Pipeline
 This is a capstone project built as a part of the [Data Engineering Zoomcamp](https://github.com/DataTalksClub/data-engineering-zoomcamp)'s assignment.
 
-##  1. <a name='ProblemStatement'></a>Problem Statement
+##  1. Problem Statement
 Server Log files help to provide insights into how search engine crawlers navigate a website.
 Typically, these files include:
 
@@ -13,10 +13,19 @@ Typically, these files include:
 - IP address of client making the request
 - Referrer, the page that provided the link to make this request
 
-Why looking at the contents of your site’s server logs? How this data pipeline can be used by SEO specialist? 
+Why looking at the contents of your site’s server logs? How this data pipeline can be used by SEO specialist?
+
+## Data Flow Overview
+1. <strong>Cron</strong>: Three Cron jobs are running daily:
+   - Server logs are extracted via Heroku CLI.
+   - <i>process_raw_txt_files.sh</i> bash script cleans the collected the data and splits it into CSV files. Each file contains data by day.
+   - <i>upload_csv.sh</i> upload CSV files to a GitHub repository.
+2. <strong>Kestra</strong>: CSV files now stored in the Github Release, will be orchestrated to GCP bucket and then ingested into <i>server_logs_data</i> Bigquery dataset.
  
-##  2. <a name='DatasetDescription'></a>Dataset Description
-- Server logs data from a [site hosted on Heroku](https://kabardian-poems-collection-b906b8b63b33.herokuapp.com/), avaliable via [GitHub](https://github.com/kkumyk/heroku_access_log_files/releases/tag/v1.0.0).
+
+
+##  2. Dataset Description
+- Server logs data from a [site hosted on Heroku](https://kabardian-poems-collection-b906b8b63b33.herokuapp.com/), avaliable via [GitHub](https://github.com/kkumyk/heroku_log_files/releases/tag/daily-upload).
 
 - Frequevency of data extraction: daily.
 
@@ -100,7 +109,7 @@ Why looking at the contents of your site’s server logs? How this data pipeline
 
 
 
-##  3. <a name='MainObjectives'></a>Main Objectives
+##  3. Main Objectives
 
 Create an ELT data pipeline for processing server logs data inluding:
 
@@ -113,7 +122,7 @@ Finally, the processed data will be presented in a Looker dashboard.
 <hr>
 
 
-##  4. <a name='Technologies'></a>Technologies
+##  Technologies
 - Infrastracture: <strong>Terraform</strong>
 - Containerization: <strong>Docker</strong>
 - Workflow orchestration: <strong>Kestra</strong>
@@ -122,7 +131,7 @@ Finally, the processed data will be presented in a Looker dashboard.
 - Transformations: <strong>dbt cloud</strong>
 - BI tools: <strong>Looker Studio</strong>
 
-##  5. <a name='Prerequisites'></a>Prerequisites
+##  5. Prerequisites
 
 Install Docker Engine and Docker Desktop on Ubuntu 24.04
 
@@ -147,7 +156,7 @@ psql (PostgreSQL) 16.6 (Ubuntu 16.6-0ubuntu0.24.04.1)
 # install CLI for Postgres
 pgcli -v # Version: 4.0.1
 ```
-##  6. <a name='CreateGCPProjectInfrastructurewithTerraform'></a>Create GCP Project Infrastructure with Terraform
+##  6. Create GCP Project Infrastructure with Terraform
 
 The infrastructure we need consists of:
 
@@ -156,7 +165,7 @@ The infrastructure we need consists of:
 
 See full indtallation instructions [here](https://github.com/kkumyk/data-engineering-zoomcamp/blob/main/1_intro_to_data_engineering/1_README.md#creating-gcp-project-infrastructure-with-terraform).
 
-###  6.1. <a name='LocalSetupforGCP'></a>Local Setup for GCP
+###  6.1. Local Setup for GCP
 
 - Create a project
   - setup a new project and write down:
@@ -170,7 +179,7 @@ See full indtallation instructions [here](https://github.com/kkumyk/data-enginee
   ```bash
   export GOOGLE_APPLICATION_CREDENTIALS="url/to/your/key.json"
   ```
-###  6.2. <a name='TerraformInstallation'></a>Terraform Installation 
+###  6.2. Terraform Installation 
 
 ####  6.2.1. <a name='Ubuntu'></a>Ubuntu
 When installing Terraform, either follow the instructions by downloading the binaries and adding them to path. Or ideally download Terraform from the Synaptic Package Manager and there will be no need to add it to the path.
@@ -200,8 +209,21 @@ terraform plan
 terraform apply
 ```
 
-##  7. <a name='RunDockerComposeContainer'></a>Run Docker Compose Container
+##  7. Orchestration with Kestra
+- docker-compose.yaml > <i>update "your-email-goes-here.com", row 45</i>
+  - flows
+    - 00_gcp_kv.yaml > <i>update rows 10, 28, 34</i>
+    - 01_gcp_setup.yaml
+    - 02_logs_2_gcs_2_bq.yaml
 
+
+
+This section explains how to orchestrate the data ingestion into:
+- <strong>GCP</strong> - the files from Github Release will be moved to a <i>server_logs_bucket</i> on Google Cloud Storage (GCS) and
+- <strong>BigQuery</strong> - the data from CSV files will be ingested into a bigQuery dataset <i>daily_data</i>.
+
+
+## Run Docker Compose Container
 ```bash
 # change to the folder that includes your docker-compose.yaml file
 cd kestra/
@@ -211,16 +233,23 @@ sudo docker compose build
 
 # run docker compose in detached mode
 sudo docker compose up -d
-
-# wait untill the above command has finished running
-# open http://localhost:8080/ in your brouser and add your flows via UI
-# to run the 02_logs_2_gcs_2_bq.yaml flow don't press execute
-# go to Triggers > "Backfill executions" > select the start date > "Execute backfills"
 ```
 
-##  8. <a name='DBT'></a>DBT
+The above command will spin up two containers:
+- kestra-postgres-1
+- kestra-kestra-1
 
-###  8.1. <a name='Prerequisites-1'></a>Prerequisites
+Wait untill the above command has finished running, open http://localhost:8080/ in your brouser and add your flows via UI: <i>Flows > Create </i>
+
+Run <i>00_gcp_kv.yaml</i> and <i>01_gcp_setup.yaml</i>.
+
+To run the <i>02_logs_2_gcs_2_bq.yaml</i> fike don't press <i>Execute</i> as it contains a trigger.
+
+Go to Triggers > "Backfill executions" > Select the start date > "Execute backfills".
+
+##  8. DBT
+
+###  8.1. Prerequisites
 
 Create 2 new empty datasets for your project in BigQuery:
 - a development dataset, e.g.: <i>dbt_dev_env</i>
@@ -228,7 +257,7 @@ Create 2 new empty datasets for your project in BigQuery:
 
 <strong>Note:</strong> Make sure you select your region in accordance with the selected region of your entire project.
 
-###  8.2. <a name='SettingUpdbt'></a>Setting Up dbt
+###  8.2. Setting Up dbt
 
 1. [Create a dbt user account](https://www.getdbt.com/signup) or [log in](https://cloud.getdbt.com/login) into the existing one.
 2. Set up a GitHub repo for your project.
@@ -241,7 +270,7 @@ Create 2 new empty datasets for your project in BigQuery:
   - select newly created service account and navigate to its "KEYS" section
   - select "create new key" and the key type JSON; this will create and download the key file to your pc
 
-###  8.3. <a name='CreatingadbtCloudProject'></a>Creating a dbt Cloud Project
+###  8.3. Creating a dbt Cloud Project
 
 To create a dbt Cloud project you will need:
 - access to your data warehouse (BigQuery):
@@ -254,7 +283,7 @@ To create a dbt Cloud project you will need:
   - the name field and
   - right below the <i>models:</i> block. You may comment or delete the example block at the end.
 
-###  8.4. <a name='Developingilog_files_analysisiProject'></a>Developing <i>log_files_analysis</i> Project
+###  8.4. Developing <i>log_files_analysis</i> Project
 1. After setting up dbt Cloud account, in the Settings of your project rename the default name to "log_files_analysis".
 2. Inside dbt_project.yml, change the project name both in:
     - the name field and
