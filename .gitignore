@@ -1,7 +1,12 @@
+.env
 terraform/.terraform*
 terraform.tfstate.backup
 terraform.tfstate
 kestra/flows/00_gcp_kv.yaml
-.env
 output_files
 access_logs
+upload_csv.sh
+process_raw_txt.sh
+access_logs_archive
+dbt
+process_raw_txt_files.sh
