@@ -1,21 +1,3 @@
-<!-- vscode-markdown-toc -->
-* 1. [Problem Statement](#ProblemStatement)
-* 2. [Dataset Description](#DatasetDescription)
-* 3. [Main Objectives](#MainObjectives)
-* 4. [Technologies](#Technologies)
-* 5. [Prerequisites](#Prerequisites)
-* 6. [Create GCP Project Infrastructure with Terraform](#CreateGCPProjectInfrastructurewithTerraform)
-	* 6.1. [Local Setup for GCP](#LocalSetupforGCP)
-	* 6.2. [Terraform Installation](#TerraformInstallation)
-		* 6.2.1. [Ubuntu](#Ubuntu)
-* 7. [Run Docker Compose Container](#RunDockerComposeContainer)
-* 8. [Log File Analysis Examples](#LogFileAnalysisExamples)
-
-<!-- vscode-markdown-toc-config
-	numbering=true
-	autoSave=true
-	/vscode-markdown-toc-config -->
-<!-- /vscode-markdown-toc -->
 # Server Log Files Analysis | Data Pipeline
 This is a capstone project built as a part of the [Data Engineering Zoomcamp](https://github.com/DataTalksClub/data-engineering-zoomcamp)'s assignment.
 
@@ -38,7 +20,7 @@ Why looking at the contents of your site’s server logs? How this data pipeline
 
 - Frequevency of data extraction: daily.
 
-### Export Logs Periodically with the [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli#install-the-heroku-cli)
+###  2.1. <a name='ExportLogsPeriodicallywiththeHerokuCLIhttps:devcenter.heroku.comarticlesheroku-cliinstall-the-heroku-cli'></a>Export Logs Periodically with the [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli#install-the-heroku-cli)
 
 1. Setup a Cron Job to Extract Access Logs via Heroku CLI.
 
@@ -55,18 +37,36 @@ Why looking at the contents of your site’s server logs? How this data pipeline
     bash process_raw_txt.sh
     ```
 
-3. Load CSV files into Github automatically.
+3. Load CSV files into Github Release automatically.
 
-<!-- - Create an initial release:
-  - GitHub > Releases > Create a new release -->
+  1. Create a repo: <i>heroku_log_files</i>
+  2. Create an initial release in your target Github repository - <i>heroku_log_files</i>:
+      - GitHub > Releases > Create a new release
+      - Choose a tag: <i>daily-upload</i> > Create new tag
+      - Release title: <i>Daily CSV Upload</i>
+      - Publish release
+  3. Generate a GitHub Personal Access Token (PAT) - needed to authenticate when uploading files via script.
+  - GitHub > Settings > Developer Settings
+  - Personal access tokens > Fine-grained tockens > Generate new token
+  - Token name: Heroku Releases Automation
+  - Set expiration date
+  - Choose repositories you want this token to access:
+    - Select "Only select repositories" and pick the relevant repository.
+  - Set Permissions under <i>Permissions</i>:
+      - Actions: Read and write if you're triggering workflows.
+      - Contents: Read and write (to upload files/releases).
+      - Metadata: Read-only (to read repo info).
+  - Generate and copy the Token.
 
 
+  4. Write a script <i>upload_csv.sh</i> using the GitHub CLI (gh) to automate uploading the CSV files: 
+  
   ```bash
   #!/bin/bash
 
-  # Set variables
-  REPO="your0github-repo"
-  TAG="daily-upload"   # release tag where files will be uploaded
+  # set variables
+  REPO="your-github-repo"
+  TAG="daily-upload" # release tag where files will be uploaded
   CSV_FOLDER="/your-local-folder-with-csvs/"  # path to your local CSV files
 
   # create release if it doesn't exist
@@ -74,7 +74,7 @@ Why looking at the contents of your site’s server logs? How this data pipeline
     gh release create "$TAG" --repo "$REPO" --title "Daily CSV Upload" --notes "Automated daily upload"
   fi
 
-  # Uuload CSV files to the release
+  # upload CSV files to the release
   for file in "$CSV_FOLDER"/*.csv; do
     echo "Uploading $file to release $TAG..."
     gh release upload "$TAG" "$file" --repo "$REPO" --clobber
@@ -82,7 +82,19 @@ Why looking at the contents of your site’s server logs? How this data pipeline
 
   echo "Upload complete!"
   ```
+  - make the script executable:
+  ```bash
+  chmod +x upload_csv.sh
+  ```
 
+  - Install GitHub CLI if not installed:
+  ```bash
+  sudo apt update && sudo apt install gh -y # Ubuntu
+  ```
+  - Authenticate GitHub CLI:
+  ```bash
+  echo YOUR_TOKEN_HERE | gh auth login --with-token
+  ```
 
 
 
@@ -206,9 +218,9 @@ sudo docker compose up -d
 # go to Triggers > "Backfill executions" > select the start date > "Execute backfills"
 ```
 
-## DBT
+##  8. <a name='DBT'></a>DBT
 
-### Prerequisites
+###  8.1. <a name='Prerequisites-1'></a>Prerequisites
 
 Create 2 new empty datasets for your project in BigQuery:
 - a development dataset, e.g.: <i>dbt_dev_env</i>
@@ -216,7 +228,7 @@ Create 2 new empty datasets for your project in BigQuery:
 
 <strong>Note:</strong> Make sure you select your region in accordance with the selected region of your entire project.
 
-### Setting Up dbt
+###  8.2. <a name='SettingUpdbt'></a>Setting Up dbt
 
 1. [Create a dbt user account](https://www.getdbt.com/signup) or [log in](https://cloud.getdbt.com/login) into the existing one.
 2. Set up a GitHub repo for your project.
@@ -229,7 +241,7 @@ Create 2 new empty datasets for your project in BigQuery:
   - select newly created service account and navigate to its "KEYS" section
   - select "create new key" and the key type JSON; this will create and download the key file to your pc
 
-### Creating a dbt Cloud Project
+###  8.3. <a name='CreatingadbtCloudProject'></a>Creating a dbt Cloud Project
 
 To create a dbt Cloud project you will need:
 - access to your data warehouse (BigQuery):
@@ -242,7 +254,7 @@ To create a dbt Cloud project you will need:
   - the name field and
   - right below the <i>models:</i> block. You may comment or delete the example block at the end.
 
-### Developing <i>log_files_analysis</i> Project
+###  8.4. <a name='Developingilog_files_analysisiProject'></a>Developing <i>log_files_analysis</i> Project
 1. After setting up dbt Cloud account, in the Settings of your project rename the default name to "log_files_analysis".
 2. Inside dbt_project.yml, change the project name both in:
     - the name field and
@@ -344,7 +356,7 @@ The resulting Looker dashboard will contain the folloving information in its tab
 #2d706c - green
 
 
-##  8. <a name='LogFileAnalysisExamples'></a>Log File Analysis Examples
+##  9. <a name='LogFileAnalysisExamples'></a>Log File Analysis Examples
 - [Streaming process NASA web access logs on GCP](https://q15928.github.io/2019/06/10/nasa-log-analysis/)
 - [Scalable Log Analytics with Apache Spark — A Comprehensive Case-Study](https://towardsdatascience.com/scalable-log-analytics-with-apache-spark-a-comprehensive-case-study-2be3eb3be977)
 - [Web Log Mining](https://medium.com/@dilshadakhan24/web-log-mining-association-rules-function-model-nasa-web-access-logs-c72eddc26bb4)
