@@ -24,7 +24,7 @@ tasks:
     taskRunner:
       type: io.kestra.plugin.core.runner.Process
     commands:
-      - wget -q -O {{render(vars.file)}} https://github.com/kkumyk/heroku_access_log_files/releases/download/v1.0.0/{{render(vars.file)}}
+      - wget -q -O {{render(vars.file)}} https://github.com/kkumyk/heroku_log_files/releases/download/daily-upload/{{render(vars.file)}}
 
   - id: upload_to_gcs
     type: io.kestra.plugin.gcp.gcs.Upload
@@ -134,4 +134,4 @@ pluginDefaults:
 triggers:
   - id: daily_logs_schedule
     type: io.kestra.plugin.core.trigger.Schedule
-    cron: "0 11 * * *"
+    cron: "0 14 * * *"
