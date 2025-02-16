@@ -2,6 +2,10 @@
 This is a capstone project built as a part of the [Data Engineering Zoomcamp](https://github.com/DataTalksClub/data-engineering-zoomcamp)'s assignment.
 
 ##  1. Problem Statement
+
+<!-- For a case of building a data pipeline using daily data for a newly migrated website, provide suggestions with
+what would be the most useful metrics to report on and how to group the data in the 4th dbt model. Provide the model example -->
+
 Server Log files help to provide insights into how search engine crawlers navigate a website.
 Typically, these files include:
 
@@ -278,114 +282,132 @@ To create a dbt Cloud project you will need:
 - admin access to your repo, where you will have your dbt project
 
 1. Connect dbt to BigQuery development dataset and to the Github repo by following [these instructions](https://github.com/DataTalksClub/data-engineering-zoomcamp/blob/main/04-analytics-engineering/dbt_cloud_setup.md).
-2. In the IDE windows, press the green Initilize button to create the project files.
+2. In the IDE windows, press the green <i>Initilize</i> button to create the project files.
 3. Inside dbt_project.yml, change the project name both in:
   - the name field and
   - right below the <i>models:</i> block. You may comment or delete the example block at the end.
 
-###  8.4. Developing <i>log_files_analysis</i> Project
+###  8.4. Developing <i>log_files_analysis</i> dbt Project
+
+#### Project Setup and Structure
+<hr>
+
 1. After setting up dbt Cloud account, in the Settings of your project rename the default name to "log_files_analysis".
-2. Inside dbt_project.yml, change the project name both in:
-    - the name field and
-    - right below the <i>models:</i> block. You may comment or delete the example block at the end.
+2. Inside <i>dbt_project.yml</i>, change the project name both in:
+    - the <i>name</i> field and
+    - right below the <i>models</i> block. You may comment or delete the example block at the end.
       ```sql
       name: 'log_files_analysis' 
 
       models:
         log_files_analysis:
       ```
-3. Under the model folder create two folders:
-    - code
-    - staging
+3. Under the <i>models</i> folder create two sub-folders:
+    - <i>core</i>
+    - <i>staging</i>
 
-4. In the staging folder create two files:
-  - <strong>schema.yml</strong>, here define:
-    - the database the data will be coming from
-    - the schema
-    - the source table
-    ```yml
-    version: 2
+4. The <i>staging</i> folder contains <strong>schema.yml</strong>, which defines:
+    - the data sources the models are going to use; here, the partitioned table <i>daily_data</i> from the <i>server_logs_data</i> BigQuery dataset will be used by the <i>stg_daily_data.sql</i> model
+    - the schema for the <i>stg_daily_data</i> table that will be created under BigQuery's development dataset based on the <i>stg_daily_data.sql</i> dbt model using the <i>daily_data</i> table.
 
-    sources:
-        - name: staging
-          database:  your-BigQuery-dataset-name # your BigQuery data base name
-          schema: log_files_data_all # same as your BigQuery dataset
-
-          tables:
-              - name: daily_data # the partitioned table from your BigQuery dataset that consolidates all daily data
-    ```
-  - <strong>stg_daily_data.sql</strong> will contain:
-
-5. Build your project.
-
-  ```bash
-  dbt build --select stg_daily_data.sql
-  ```
-
-For a case of building a data pipeline using daily data for a newly migrated website, provide suggestions with
-what would be the most useful metrics to report on and how to group the data in the 4th dbt model. Provide the model example
-
+#### Models
 <hr>
 
-Update model #1 stg_daily_data.sql by referencing a macto in it:
-- create a reusable macro to classify requests as bot and human based on user_agent;
-  - e.g.: Mozilla/5.0(compatible;YandexBot/3.0;+http://yandex.com/bots)
-- reference this macro in your model
-- the result of running this model is an updated daily view data with a column referencing the bots vs human flag
+##### 1. stg_daily_data.sql (staging)
 
+<i>stg_daily_data.sql</i> - this model referencing <i>bot_vs_human.sql</i> macro which separates requests by defining them either as a <i>bot</i> or as a <i>human</i> based on the data found in the <i>user_agent</i> column. E.g.: 
+    
+    Mozilla/5.0(compatible;YandexBot/3.0;+http://yandex.com/bots)
+
+  The result of running <i>stg_daily_data.sql</i> model is a <i>stg_daily_data</i> view created under the <i>dbt_dev_env</i> with a column referencing bot vs human flag.
+
+```bash
+dbt build --select stg_daily_data.sql
+```
 <hr>
 
-Create a seed based model #2:
+##### 2. page_categories.sql (core) - based on a provided seed data 
 
-Add a seed file, e.g.: a CSV with all existing pages on the site with columns:
+This module is using a <i>categories_by_page.csv</i> file - supplied wihtin <i>seeds</i> folder - listing all existing pages on the site. The file has two columns:
   - page url
   - page type: category vs regular page
 
-- create categories_by_page.csv file in dbt cloud under the seeds folder
-- use cat and then copy what’s on my terminal and paste the values into the all_pages.csv file
+The <i>page_categories.sql</i> model uses the seed file and extends it by a <i>cleaned_page_url</i> which contains the same data as in page_url trimmed the trailing slash at the end and the pagination. This version of the page urls will be used in the final dashboard.
+
 ```bash
-cd to_the_folder_with_the_all_pages.csv
-cat categories_by_page.csv
+dbt build --select page_categories.sql
 ```
-<!-- - add categories.sql to the models/core folder -->
+<!-- TODO: -->
+<!-- 
 - run dbt seed by typing <code>dbt seed</code> in the dbt command line
 - after refreshing the tab with the BigQuery you will see a new categories_by_page table that will contain the data from the seed file
-- as we are using the seed file as it is we don't need to create a model for it; simply running <code>dbt seed</code> will create a table in the BigQuery
-<hr>
-
-Create model #3:
-
-create seed based dbt model (daily_data_by_page.sql) in the Core folder that will produce a table instead of a view and will contain:
-  - values from the stg_daily_data referencing macro based bot_human_flag
-  - values from the page_categories seed based table
-  - build your project
-    ```bash
-    dbt build --select ddaily_data_by_page.sql
-    ```
-<hr>
-
-
-Create model #4:
-
-- this model contains the following aggregated calculations:
-  - 
-
-
-  - build your project
-    ```bash
-    dbt build --select aggregated_data.sql
-    ```
+After adding the CSV file to the seeds folder, run <code>dbt seed</code> command. -->
+<!-- - as we are using the seed file as it is we don't need to create a model for it; simply running <code>dbt seed</code> will create a table in the BigQuery -->
 
 <hr>
+
+##### 3. daily_data_by_page.sql
+
+This model is using previously created models:
+- stg_daily_data.sql (staging)
+- page_categories.sql (core)
+
+To build your project run:
+```bash
+dbt build --select daily_data_by_page.sql
+```
+<hr>
+
+##### 4. aggregated_data.sql
+
+This model contains the following aggregated calculations:
+
+  ```bash
+  dbt build --select aggregated_data.sql
+  ```
+
+
+
+<hr>
+
+Before going into production, make sure everything is submitted to gitgub.
 
 The resulting Looker dashboard will contain the folloving information in its tables/graphs:
 
+</hr>
+<!-- 
+#2d706c - green -->
 
 
-#2d706c - green
-
-
-##  9. <a name='LogFileAnalysisExamples'></a>Log File Analysis Examples
+##  9. Log File Analysis Examples
 - [Streaming process NASA web access logs on GCP](https://q15928.github.io/2019/06/10/nasa-log-analysis/)
 - [Scalable Log Analytics with Apache Spark — A Comprehensive Case-Study](https://towardsdatascience.com/scalable-log-analytics-with-apache-spark-a-comprehensive-case-study-2be3eb3be977)
 - [Web Log Mining](https://medium.com/@dilshadakhan24/web-log-mining-association-rules-function-model-nasa-web-access-logs-c72eddc26bb4)
+
+
+
+
+<!-- 
+          ```yml
+          version: 2
+
+          sources:
+              - name: staging
+                database: gcp_project_id # replace with yours
+                schema: log_files_data_all # same as your BigQuery dataset
+
+                tables:
+                    - name: daily_data # the partitioned table from your BigQuery dataset that consolidates all daily data
+          ``` -->
+
+
+
+
+
+<!-- - create categories_by_page.csv file in dbt cloud under the seeds folder
+- use cat and then copy what’s on my terminal and paste the values into the all_pages.csv file
+  ```bash
+  cd to_the_folder_with_the_all_pages.csv
+  cat categories_by_page.csv
+  ``` -->
+<!-- - add categories.sql to the models/core folder -->
