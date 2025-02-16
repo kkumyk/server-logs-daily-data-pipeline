@@ -8,5 +8,4 @@ access_logs
 upload_csv.sh
 process_raw_txt.sh
 access_logs_archive
-dbt
 process_raw_txt_files.sh
