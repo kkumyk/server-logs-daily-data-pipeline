@@ -1,0 +1,98 @@
+version: 2
+
+models:
+  - name: daily_data_by_page
+    description: "Table containing web server logs with request and response details."
+    columns:
+      - name: unique_row_id
+        description: "Unique identifier for each row in the log."
+        data_type: BYTES
+        tests:
+          - unique
+          - not_null
+
+      - name: filename
+        description: "Name of the log file from which the entry originated."
+        data_type: STRING
+
+      - name: ip_address
+        description: "IP address of the client making the request."
+        data_type: STRING
+
+      - name: timestamp
+        description: "Timestamp when the request was made."
+        data_type: TIMESTAMP
+
+      - name: http_method
+        description: "HTTP method used in the request (e.g., GET, POST)."
+        data_type: STRING
+
+      - name: requested_url
+        description: "The URL requested by the client."
+        data_type: STRING
+
+      - name: http_protocol
+        description: "HTTP protocol version used (e.g., HTTP/1.1)."
+        data_type: STRING
+
+      - name: response_code
+        description: "HTTP status code returned in response to the request."
+        data_type: INTEGER
+
+      - name: bytes_transferred
+        description: "Number of bytes transferred in the response."
+        data_type: INTEGER
+
+      - name: referrer
+        description: "The referrer URL that led the client to the requested resource."
+        data_type: STRING
+
+      - name: user_agent
+        description: "The user agent string identifying the client software."
+        data_type: STRING
+
+      - name: bot_human_flag
+        description: "Flag indicating if the request was from a bot or a human."
+        data_type: STRING
+
+      - name: page_category
+        description: "Category of the page requested."
+        data_type: STRING
+
+
+  - name: aggregated_data
+    description: "Table summarizing web page requests, including total requests, unique visitors, and success metrics."
+    columns:
+      - name: request_date
+        description: "The date when the requests were made."
+        data_type: DATE
+        tests:
+          - not_null
+
+      - name: page_url
+        description: "The URL of the requested page."
+        data_type: STRING
+        tests:
+          - not_null
+
+      - name: page_category
+        description: "The category to which the requested page belongs."
+        data_type: STRING
+
+      - name: bot_human_flag
+        description: "Indicator specifying whether the requests were made by a bot or a human."
+        data_type: STRING
+
+      - name: total_requests
+        description: "Total number of requests made to the page on the given date."
+        data_type: INTEGER
+        tests:
+          - not_null
+
+      - name: unique_visitors
+        description: "Count of unique visitors accessing the page on the given date."
+        data_type: INTEGER
+
+      - name: success_requests
+        description: "Number of successful requests (typically with HTTP 2xx status codes)."
+        data_type: INTEGER

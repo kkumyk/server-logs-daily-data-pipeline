@@ -1,0 +1,6 @@
+version: 2
+
+seeds: 
+  - name: categories_by_page
+    description: >
+      all pages found on the site categoriesed
