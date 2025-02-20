@@ -60,6 +60,7 @@ The end-to-end data pipeline includes the follwoing steps:
 ## Reproducing Project
 
 ### 1. Prerequisites
+Clone [this repo](https://github.com/kkumyk/log_files_analysis_pipeline).
 
 Make sure you have the following pre-installed components:
 - [GCP account](https://cloud.google.com/)
@@ -133,7 +134,8 @@ After following the commands below you should see "server_logs_bucket" in GCS an
 # Refresh service-account's auth-token for this session:
 gcloud auth application-default login
 
-# Initialize configuration and import plugins for Google provider: cd to the folder with the Terraform config files and run the following command:
+# Initialize configuration and import plugins for Google provider -
+# cd to the folder with the Terraform config files and run the following command:
 terraform init
 
 # Create resources with Terraform plan; add your project ID when prompted:
@@ -203,25 +205,24 @@ Create 2 new empty datasets for your project in BigQuery:
   - in the "Grant this service account access to project" select "BigQuery Admin"
   - press "Done"
   - select newly created service account and navigate to its "KEYS" section
-  - select "create new key" and the key type JSON; this will create and download the key file to your pc
+  - select "create new key" and the key type JSON; this will create and download the key file to your pc.
 
 #### Creating a dbt Cloud Project
 
 To create a dbt Cloud project you will need:
 - access to your data warehouse (BigQuery):
-  - in your dbt project settings adjust Connections/BigQuery by uploading a service account JSON file via the Settings section; it will autopopulate the fields in that section.
+  - in your dbt project settings adjust Connections/BigQuery by uploading a service account JSON file via the Settings section; it will auto-populate the fields in that section.
 - admin access to your repo, where you will have your dbt project
 
 1. Connect dbt to BigQuery development dataset and to the Github repo by following [these instructions](https://github.com/DataTalksClub/data-engineering-zoomcamp/blob/main/04-analytics-engineering/dbt_cloud_setup.md).
 2. In the IDE windows, press the green <i>Initilize</i> button to create the project files.
-3. Inside dbt_project.yml, change the project name both in:
+<!-- 3. Inside dbt_project.yml, change the project name both in:
   - the name field and
-  - right below the <i>models:</i> block. You may comment or delete the example block at the end.
+  - right below the <i>models:</i> block. Cmment or delete the example block at the end. -->
 
 ####  Developing <i>log_files_analysis</i> dbt Project
 
 ##### Project Setup and Structure
-<hr>
 
 1. After setting up dbt Cloud account, in the Settings of your project rename the default name to "log_files_analysis".
 2. Inside <i>dbt_project.yml</i>, change the project name both in:
@@ -242,40 +243,35 @@ To create a dbt Cloud project you will need:
     - the schema for the <i>stg_daily_data</i> table that will be created under BigQuery's development dataset based on the <i>stg_daily_data.sql</i> dbt model using the <i>daily_data</i> table.
 
 ##### Models
-<hr>
 
 ###### 1. stg_daily_data.sql (staging)
 
-<i>stg_daily_data.sql</i> - this model referencing <i>bot_vs_human.sql</i> macro which separates requests by defining them either as a <i>bot</i> or as a <i>human</i> based on the data found in the <i>user_agent</i> column. E.g.: 
+<i>stg_daily_data.sql</i> - this model references <i>bot_vs_human.sql</i> macro which separates requests by defining them either as a <i>bot</i> or as a <i>human</i> based on the data found in the <i>user_agent</i> column. E.g.: 
     
     Mozilla/5.0(compatible;YandexBot/3.0;+http://yandex.com/bots)
 
-  The result of running <i>stg_daily_data.sql</i> model is a <i>stg_daily_data</i> view created under the <i>dbt_dev_env</i> with a column referencing bot vs human flag.
-
+Run the <i>stg_daily_data.sql</i> model:
 ```bash
 dbt build --select stg_daily_data.sql
 ```
-<hr>
 
-###### 2. page_categories.sql (core) - based on a provided seed data 
+The result is a <i>stg_daily_data</i> view created under the <i>dbt_dev_env</i> with a column referencing bot vs human flag.
 
-This module is using a <i>categories_by_page.csv</i> file - supplied wihtin <i>seeds</i> folder - listing all existing pages on the site. The file has two columns:
+
+###### 2. page_categories.sql (core) - based on a provided seed data
+
+This module is using a <i>categories_by_page.csv</i> file - supplied wihtin <i>seeds</i> folder - which lists all existing pages on the site. The file has two columns:
   - page url
   - page type: category vs regular page
 
+After adding the CSV file to the seeds folder, run <code>dbt seed</code> command in the dbt command line. Refresh the tab with the BigQuery you will see a new <i>categories_by_page</i> table that will contain the data from the seed file.
+
 The <i>page_categories.sql</i> model uses the seed file and extends it by a <i>cleaned_page_url</i> which contains the same data as in page_url trimmed the trailing slash at the end and the pagination. This version of the page urls will be used in the final dashboard.
 
+Run the <i>page_categories.sql</i> model:
 ```bash
 dbt build --select page_categories.sql
 ```
-<!-- TODO: -->
-<!-- 
-- run dbt seed by typing <code>dbt seed</code> in the dbt command line
-- after refreshing the tab with the BigQuery you will see a new categories_by_page table that will contain the data from the seed file
-After adding the CSV file to the seeds folder, run <code>dbt seed</code> command. -->
-<!-- - as we are using the seed file as it is we don't need to create a model for it; simply running <code>dbt seed</code> will create a table in the BigQuery -->
-
-<hr>
 
 ###### 3. daily_data_by_page.sql
 
@@ -287,21 +283,19 @@ To build your project run:
 ```bash
 dbt build --select daily_data_by_page.sql
 ```
-<hr>
 
 ###### 4. aggregated_data.sql
 
-This model contains the following aggregated calculations:
+This model contains the aggregated calculations which will be shown on the dashboard:
 
   ```bash
   dbt build --select aggregated_data.sql
   ```
-
-<hr>
+<!-- 
+  Run dbt build from jobs menu in dbt cloud. -->
 
 Before going into production, make sure everything is submitted to GitHub.
 
-</hr>
 
 
 
