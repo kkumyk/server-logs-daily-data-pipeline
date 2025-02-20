@@ -110,31 +110,24 @@ Make sure you have the following pre-installed components:
 
 ### 3. Create GCP Project Infrastructure with Terraform
 
-We use Terraform to build and manage GCP infrastructure. The infrastructure we need to create consists of:
+Terraform is infrastructure as cloud (IaC) and it will be used to build and destroy GCP resources. The infrastructure we need to create for this project consists of:
 
 - a Cloud Storage Bucket (google_storage-bucket) for our Data Lake
 - a BigQuery Dataset (google_bigquery_dataset)
 
-See full installation instructions [here](https://github.com/kkumyk/data-engineering-zoomcamp/blob/main/1_intro_to_data_engineering/1_README.md#creating-gcp-project-infrastructure-with-terraform).
+#### Terraform Installation
+See full Ubuntu installation instructions [here](https://github.com/kkumyk/data-engineering-zoomcamp/blob/main/1_intro_to_data_engineering/1_README.md#creating-gcp-project-infrastructure-with-terraform).
 
-
-
-
-####  Terraform Installation 
-
-####  Ubuntu
-When installing Terraform, either follow the instructions by downloading the binaries and adding them to path. Or ideally download Terraform from the Synaptic Package Manager and there will be no need to add it to the path.
-
-[Terraform Installation on Linux/Ubuntu Instructions](https://github.com/kkumyk/data-engineering-zoomcamp/blob/main/1_intro_to_data_engineering/1_README.md#creating-gcp-project-infrastructure-with-terraform)
-
-
-Add your project ID in <strong>variables.tf</strong>:
-  ```tf
-  variable "project" {
-    description = "ADD-YOUR-PROJECT-ID_HERE"
-  }
-  ```
-After following the commands below you should see "server_logs_bucket" in GCS and "server_logs_data" dataset in BigQuery.
+You will find two files in the cloned [terraform folder](https://github.com/kkumyk/log_files_analysis_pipeline/tree/master/terraform):
+  - main.tf
+  - variables.tf
+    - update with your project ID in <strong>variables.tf</strong>:
+      ```tf
+      variable "project" {
+        description = "ADD-YOUR-PROJECT-ID_HERE"
+      }
+      ```
+After following the commands below you should see "server_logs_bucket" in GCS and "server_logs_data" dataset in BigQuery:
 
 ```bash
 # Refresh service-account's auth-token for this session:
@@ -150,21 +143,22 @@ terraform plan
 terraform apply
 ```
 
-###  Orchestration with Kestra
-- docker-compose.yaml > <i>update "your-email-goes-here.com", row 45</i>
+### 4. Orchestration with Kestra
+
+This section explains how to orchestrate the data ingestion into:
+- <strong>a data lake (GCS)</strong> - the files from Github Release will be moved to a <i>server_logs_bucket</i> and 
+- <strong>a data warehouse (BigQuery)</strong> - the data from CSV files will be ingested into a table under the newly created <i>server_logs_data</i> dataset.
+
+The cloned kestra folder contains flow files and docker-compose.yaml. Two of them need to be updated, see below:
+- docker-compose.yaml : <i>update "your-email-goes-here.com", row 45</i>
   - flows
-    - 00_gcp_kv.yaml > <i>update rows 10, 28, 34</i>
+    - 00_gcp_kv.yaml : <i>update rows 10, 28, 34</i>
+
+      <strong>IMPORTANT! <i>Watch out to NOT submit the updated file to GitHub!</i></strong>
     - 01_gcp_setup.yaml
     - 02_logs_2_gcs_2_bq.yaml
 
-
-
-This section explains how to orchestrate the data ingestion into:
-- <strong>GCP</strong> - the files from Github Release will be moved to a <i>server_logs_bucket</i> on Google Cloud Storage (GCS) and
-- <strong>BigQuery</strong> - the data from CSV files will be ingested into a bigQuery dataset <i>daily_data</i>.
-
-
-### Run Docker Compose Container
+#### Run Docker Compose Container
 ```bash
 # change to the folder that includes your docker-compose.yaml file
 cd kestra/
@@ -184,11 +178,11 @@ Wait untill the above command has finished running, open http://localhost:8080/ 
 
 Run <i>00_gcp_kv.yaml</i> and <i>01_gcp_setup.yaml</i>.
 
-To run the <i>02_logs_2_gcs_2_bq.yaml</i> fike don't press <i>Execute</i> as it contains a trigger.
+To run the <i>02_logs_2_gcs_2_bq.yaml</i> file don't press <i>Execute</i> as it contains a trigger.
 
 Go to Triggers > "Backfill executions" > Select the start date > "Execute backfills".
 
-###  DBT
+### 5. DBT
 
 ####  Prerequisites
 
