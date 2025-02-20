@@ -37,6 +37,8 @@ The data is exracted via Heroku CLI using bash commands and uploaded to [GitHub 
 
 ##  Project Architecture and Execution Flow
 
+<img src="https://github.com/kkumyk/log_files_analysis_pipeline/blob/master/doc/de-pipeline.drawio.png">
+
 ### Data Flow
 
 The end-to-end data pipeline includes the follwoing steps:
@@ -435,3 +437,8 @@ https://medium.com/@kazarmax/from-api-to-dashboard-building-an-end-to-end-etl-pi
   ``` -->
 <!-- - add categories.sql to the models/core folder -->
 
+
+<!-- https://github.com/EdidiongEsu/capital_bikeshare?tab=readme-ov-file
+https://github.com/ankurchavda/streamify
+https://github.com/hoe94/DTC_DE_FinalProject
+https://github.com/MarcosMJD/ghcn-d -->
