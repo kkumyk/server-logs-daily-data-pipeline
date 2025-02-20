@@ -59,62 +59,67 @@ The end-to-end data pipeline includes the follwoing steps:
 
 ## Reproducing Project
 
-###  Prerequisites
+### 1. Prerequisites
 
+Make sure you have the following pre-installed components:
+- [GCP account](https://cloud.google.com/)
+- [Terraform](https://developer.hashicorp.com/terraform/install)
+- [Docker](https://docs.docker.com/engine/install/)
+  
+  <summary>Details below list commands used to install Docker Engine and Docker Compose on Ubuntu 24.04:
+  <details>
 
+    ```bash
+    # install Docker Engine (used when we want to handle only one container)
+    docker --version # Docker version 27.4.1, build b9d17ea
 
+    # verify the installation run
+    sudo service docker start
 
-Install Docker Engine and Docker Desktop on Ubuntu 24.04
+    # this command downloads a test image and runs it in a container
+    # when the container runs, it prints a confirmation message and exits
+    sudo docker run hello-world
 
-```bash
-# install Docker Engine (used when we want to handle only one container)
-docker --version # Docker version 27.4.1, build b9d17ea
+    # install Docker Compose (used when we have multiple containers to handle)
+    docker compose version # Docker Compose version v2.32.1
+    ```
+    </details>
+  </summary>
 
-# verify the installation run
-sudo service docker start
+### 2. Google Cloud Platform (GCP) - Project Setup
+- Setup up GCP free account if you don't have an account. It expires after 90 days.
+- Create a new project and take note of the project number and project ID.
+- Create a service account for the project.
+- Configure service account to get access to this project and download auth-keys (.json).
+- Make sure the service account has all the permissions below:
+    - Viewer
+    - Storage Admin
+    - Storage Object Admin
+    - BigQuery Admin
+- Download [SDK](https://cloud.google.com/sdk) for local setup.
+- Set env var to point to your downloaded GCP auth-key by switching to the folder where the key was saved and running the commands below on the command line:
+  ```bash
+  export GOOGLE_APPLICATION_CREDENTIALS="<path/to/your/service-account-authkeys>.json"
+  
+  # Refresh token/session, and verify authentication
+  gcloud auth application-default login
+  ```
+- Enable the following options under the APIs and services section:
+  - [Identity and Access Management (IAM) API](https://console.cloud.google.com/apis/library/iam.googleapis.com)
+  - [IAM service account credentials API](https://console.cloud.google.com/apis/library/iamcredentials.googleapis.com)
 
-# this command downloads a test image and runs it in a container
-# when the container runs, it prints a confirmation message and exits
-sudo docker run hello-world
+### 3. Create GCP Project Infrastructure with Terraform
 
-# install Docker Compose (used when we have multiple containers to handle)
-docker compose version # Docker Compose version v2.32.1
-
-# install Postgres 
-psql --version
-psql (PostgreSQL) 16.6 (Ubuntu 16.6-0ubuntu0.24.04.1)
-
-# install CLI for Postgres
-pgcli -v # Version: 4.0.1
-```
-
-
-
-
-
-### Create GCP Project Infrastructure with Terraform
-
-The infrastructure we need consists of:
+We use Terraform to build and manage GCP infrastructure. The infrastructure we need to create consists of:
 
 - a Cloud Storage Bucket (google_storage-bucket) for our Data Lake
 - a BigQuery Dataset (google_bigquery_dataset)
 
-See full indtallation instructions [here](https://github.com/kkumyk/data-engineering-zoomcamp/blob/main/1_intro_to_data_engineering/1_README.md#creating-gcp-project-infrastructure-with-terraform).
+See full installation instructions [here](https://github.com/kkumyk/data-engineering-zoomcamp/blob/main/1_intro_to_data_engineering/1_README.md#creating-gcp-project-infrastructure-with-terraform).
 
-####  Local Setup for GCP
 
-- Create a project
-  - setup a new project and write down:
-    - Project number
-    - Project ID
 
-- Create a service account for the project and: 
-  - download authentication keys to your computer
-- Set env var to point to your downloaded GCP auth-key:
-  - go to the folder where the key was saved and on the command line run the command below:
-  ```bash
-  export GOOGLE_APPLICATION_CREDENTIALS="url/to/your/key.json"
-  ```
+
 ####  Terraform Installation 
 
 ####  Ubuntu
