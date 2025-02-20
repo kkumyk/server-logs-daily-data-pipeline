@@ -1,0 +1,25 @@
+{% macro bots(user_agent) %}
+    CASE
+        WHEN LOWER(TRIM({{ user_agent }})) LIKE '%googlebot%' THEN 'GoogleBot'
+        WHEN LOWER(TRIM({{ user_agent }})) LIKE '%claudebot%' THEN 'ClaudeBot'
+        WHEN LOWER(TRIM({{ user_agent }})) LIKE '%amazonbot%' THEN 'AmazonBot'
+        WHEN LOWER(TRIM({{ user_agent }})) LIKE '%yandexbot%' THEN 'YandexBot'
+        WHEN LOWER(TRIM({{ user_agent }})) LIKE '%bingbot%' THEN 'BingBot'
+        WHEN LOWER(TRIM({{ user_agent }})) LIKE '%duckduckgo%' THEN 'DuckDuckGoBot'
+        WHEN LOWER(TRIM({{ user_agent }})) LIKE '%baiduspider%' THEN 'BaiduSpider'
+        WHEN LOWER(TRIM({{ user_agent }})) LIKE '%applebot%' THEN 'AppleBot'
+        WHEN LOWER(TRIM({{ user_agent }})) LIKE '%facebookexternalhit%' THEN 'FacebookBot'
+        WHEN LOWER(TRIM({{ user_agent }})) LIKE '%twitterbot%' THEN 'TwitterBot'
+        WHEN LOWER(TRIM({{ user_agent }})) LIKE '%slackbot%' THEN 'SlackBot'
+        WHEN LOWER(TRIM({{ user_agent }})) LIKE '%linkedinbot%' THEN 'LinkedInBot'
+        WHEN LOWER(TRIM({{ user_agent }})) LIKE '%pinterestbot%' THEN 'PinterestBot'
+        WHEN LOWER(TRIM({{ user_agent }})) LIKE '%telegrambot%' THEN 'TelegramBot'
+        WHEN LOWER(TRIM({{ user_agent }})) LIKE '%discordbot%' THEN 'DiscordBot'
+        WHEN LOWER(TRIM({{ user_agent }})) LIKE '%ahrefsbot%' THEN 'AhrefsBot'
+        WHEN LOWER(TRIM({{ user_agent }})) LIKE '%semrushbot%' THEN 'SemrushBot'
+        WHEN LOWER(TRIM({{ user_agent }})) LIKE '%mj12bot%' THEN 'MajesticBot'
+        WHEN LOWER(TRIM({{ user_agent }})) LIKE '%seznambot%' THEN 'SeznamBot'
+        WHEN LOWER(TRIM({{ user_agent }})) LIKE '%sogou%' THEN 'SogouBot'
+        ELSE 'other'
+    END
+{% endmacro %}
