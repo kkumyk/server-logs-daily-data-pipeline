@@ -11,7 +11,8 @@ WITH bots_updated_logs AS (
         bytes_transferred,
         referrer,
         user_agent,
-        {{ bot_vs_human('user_agent') }} AS bot_human_flag
+        {{ bot_vs_human('user_agent') }} AS bot_human_flag,
+        {{ bots('user_agent') }} AS bot_name
     FROM {{ source('staging', 'daily_data') }}
 )
 

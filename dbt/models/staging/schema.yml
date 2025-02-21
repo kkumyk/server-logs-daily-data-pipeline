@@ -2,8 +2,8 @@ version: 2
 
 sources:
     - name: staging
-      database:  bigquery_database # replace with yours
-      schema: server_logs_data # your BigQuery dataset
+      database: log-analysis-pipeline-448011 
+      schema: server_logs_data # same as set in the BigQuery
 
       tables:
           - name: daily_data # the partitioned table from your BigQuery dataset that consolidates all daily data
@@ -39,3 +39,7 @@ models:
             description: The page the visitor came from.
           - name: user_agent
             description: A header sent during the HTTP request that tells the server what kind of` application (agent) is connecting to it.
+          - name: bot_human_flag
+            description: A flag that separates a bot request from a homan ones.
+          - name: bot_name
+            description: A flag that marks a request made by google bot.

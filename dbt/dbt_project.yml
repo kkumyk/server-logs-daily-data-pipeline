@@ -1,3 +1,7 @@
+
+# Name your project! Project names should contain only lowercase characters
+# and underscores. A good package name should reflect your organization's
+# name or the intended use of these models
 name: 'log_files_analysis'
 version: '1.0.0'
 config-version: 2
@@ -22,8 +26,6 @@ clean-targets:         # directories to be removed by `dbt clean`
 
 vars:
   is_test_run: false
-
-
 
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
