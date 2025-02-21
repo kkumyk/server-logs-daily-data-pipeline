@@ -8,6 +8,8 @@ This project was executed as a part of the [Data Engineering Zoomcamp 2025](http
 
 Finally, the processed data will be presented in a Looker dashboard.
 
+<img src="https://github.com/kkumyk/log_files_analysis_pipeline/blob/master/doc/de-pipeline.drawio.png">
+
 </hr>
 
 ##  Project Overview
@@ -36,8 +38,6 @@ The following data is extracted from the Heroku server logs:
 The data is exracted via Heroku CLI using bash commands and uploaded to [GitHub repo](https://github.com/kkumyk/heroku_log_files/releases/tag/daily-upload) similar to how it was done in the course. The data is stored in CSV files and uploaded daily. Each file contains requests from the previous day.
 
 ##  Project Architecture and Execution Flow
-
-<img src="https://github.com/kkumyk/log_files_analysis_pipeline/blob/master/doc/de-pipeline.drawio.png">
 
 ### Data Flow
 
@@ -198,10 +198,13 @@ Create 2 new empty datasets for your project in BigQuery:
 
 #### Setting Up dbt
 
-1. [Create a dbt user account](https://www.getdbt.com/signup) or [log in](https://cloud.getdbt.com/login) into the existing one.
+1. [Create a dbt Cloud account](https://www.getdbt.com/signup) or [log in](https://cloud.getdbt.com/login) into the existing one.  
 2. Set up a GitHub repo for your project.
-3. Connect dbt to BigQuery development dataset and to the Github repo by following ["How to setup dbt cloud with bigquery" instructions](https://github.com/kkumyk/data-engineering-zoomcamp/blob/main/4_analytics_engineering/4_README.md#setting-up-dbt).
-<strong>Note:</strong> The steps for the current service account creation have slightly changed. E.g.: before you can actually create a new service account you will be first asked if you would like to re-use an existing one if such is already there. In this case, press "Continue" to land on a form to set up a new service account by proving your "Service account details".
+3. Connect dbt to BigQuery development dataset and to the Github repo by following one of the instructions below:
+  - [Set up BigQuery OAuth](https://docs.getdbt.com/docs/cloud/manage-access/set-up-bigquery-oauth) or
+  - [How to setup dbt Cloud with BigQuery](https://github.com/kkumyk/data-engineering-zoomcamp/blob/main/4_analytics_engineering/4_README.md#setting-up-dbt)/
+
+    <strong>Note:</strong> The steps for the current service account creation have slightly changed. E.g.: before you can actually create a new service account you will be first asked if you would like to re-use an existing one if such is already there. In this case, press "Continue" to land on a form to set up a new service account by proving your "Service account details".
   - add service account name, e.g.: <i>dbt-service-account</i>
   - press "create and continue"
   - in the "Grant this service account access to project" select "BigQuery Admin"
@@ -299,6 +302,18 @@ This model contains the aggregated calculations which will be shown on the dashb
 Before going into production, make sure everything is submitted to GitHub.
 
 
+### 6. Looker Studio Dashboard
+
+When the production models are ready, you can start building a dashboard. The [Server Access Logs Daily Data Pipeline](https://lookerstudio.google.com/u/0/reporting/260145bd-366d-4ab9-93fa-1e6ac5d010f2/page/R9DYE) dashboard is built using Looker Studio. The process for building a dashboard in Looker Studio can be found in [this video](https://www.youtube.com/watch?v=39nLTs74A3E&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=44).
+
+The final dashboard includes the following diagrams:
+- total requests
+- total requests by page url
+- HTTP status codes by page category
+- bot vs human requests
+- identified bots
+
+<img src="https://github.com/kkumyk/log_files_analysis_pipeline/blob/master/doc/server_access_logs_daily_data_pipeline.png">
 
 
 
