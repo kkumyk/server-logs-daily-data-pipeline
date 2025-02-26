@@ -194,36 +194,64 @@ Create 2 new empty datasets for your project in BigQuery:
 - a development dataset, e.g.: <i>dbt_dev_env</i>
 - a production dataset, e.g.: <i>dbt_prod_env</i>
 
-<strong>Note:</strong> Make sure you select your region in accordance with the selected region of your entire project.
+<strong>NOTE:</strong> Make sure you select your region in accordance with the selected region of your entire project.
 
-#### Setting Up dbt
+#### Setting Up dbt Cloud
 
 1. [Create a dbt Cloud account](https://www.getdbt.com/signup) or [log in](https://cloud.getdbt.com/login) into the existing one.  
-2. Set up a GitHub repo for your project.
-3. Connect dbt to BigQuery development dataset and to the Github repo by following one of the instructions below:
-  - [Set up BigQuery OAuth](https://docs.getdbt.com/docs/cloud/manage-access/set-up-bigquery-oauth) or
-  - [How to setup dbt Cloud with BigQuery](https://github.com/kkumyk/data-engineering-zoomcamp/blob/main/4_analytics_engineering/4_README.md#setting-up-dbt)/
+2. Set up a GitHub repo for your dbt project.
+3. Set up dbt Cloud with BigQuery:
+    - <strong>connect dbt to BigQuery development <i>dbt_dev_env</i> dataset</strong>:
+        - <strong>create a BigQuery service account</strong> - [use instructions here](https://github.com/DataTalksClub/data-engineering-zoomcamp/blob/main/04-analytics-engineering/dbt_cloud_setup.md#create-a-bigquery-service-account); <strong>NOTE:</strong> The steps for the current service account creation have slightly changed. E.g.: before you can actually create a new service account you will be first asked if you would like to re-use an existing one if such is already there. In this case, press "Continue" to land on a form to set up a new service account by proving your "Service account details":
+          - add service account name, e.g.: <i>dbt-service-account</i>
+          - press "create and continue"
+          - in the "Grant this service account access to project" select "BigQuery Admin"
+          - press "Done"
+          - select newly created service account and navigate to its "KEYS" section
+          - select "create new key" and the key type JSON; this will create and download the key file to your pc.
+      - <strong>set up a dbt Cloud project</strong>:
+        - Project name: <i>server-logs-daily-data-pipeline</i> and press "Continue"
+        - Configure your development environment: Choose Bigquery as your data warehouse
+        - Upload the key you downloaded from BQ on the create from file option.
+        - Scroll down to the end of the page and set up your development credentials. This can also done under: Develop > Configure Cloud CLI > Credentials > click on project name > Development credentials > Dataset 
+        - Setup a repository > GitHub > Connect GitHub Account > Authorize dbt Cloud > Add repository from: Git Clone > paste the SSH key from your repo. [More details here](https://github.com/DataTalksClub/data-engineering-zoomcamp/blob/main/04-analytics-engineering/dbt_cloud_setup.md#add-github-repository).
+        - You will get a deploy key in dbt Cloud. Copy it and head to your GH repo and go to the settings tab. Under security you'll find the menu "D"eploy keys". Click on add key and paste the deploy key provided by dbt cloud. Make sure to tick on "Allow write access".
+        - Replicate file contents are in the dbt folder. File structure would look like:
+        TODO
 
-    <strong>Note:</strong> The steps for the current service account creation have slightly changed. E.g.: before you can actually create a new service account you will be first asked if you would like to re-use an existing one if such is already there. In this case, press "Continue" to land on a form to set up a new service account by proving your "Service account details".
-  - add service account name, e.g.: <i>dbt-service-account</i>
-  - press "create and continue"
-  - in the "Grant this service account access to project" select "BigQuery Admin"
-  - press "Done"
-  - select newly created service account and navigate to its "KEYS" section
-  - select "create new key" and the key type JSON; this will create and download the key file to your pc.
+<strong>Deploying with dbt Cloud</strong>
 
-#### Creating a dbt Cloud Project
+Before going into production, make sure everything is submitted to GitHub. Then:
+- navigate to your dbt environments via Deploy > Environments; at this stage only Development environment should be should there
+- create a Production environtment: click on the "Create environtment" button on the top right; field that need to be added/selected are:
+  - Environment name: Production
+  - Environment type: Deployment
+  - Connection: BigQuery
+  - Dataset: the name of your production dataset in BigQuery and press "Test Connection" and Save after successeful testing.
+  - go to Deploy > Jobs
+  - click on the "Create job" button, add the following details:
+     - Job name: dbt_build
+     - Environment: Production
+     - Execution settings > Commands:
+        - dbt seed
+        - dbt run
+        - dbt test
 
-To create a dbt Cloud project you will need:
-- access to your data warehouse (BigQuery):
-  - in your dbt project settings adjust Connections/BigQuery by uploading a service account JSON file via the Settings section; it will auto-populate the fields in that section.
-- admin access to your repo, where you will have your dbt project
+There is of course options to schedule the job which I'm not using now as I want manually run the job to see if it simply works in the first place; I therefore save the job and run it by clicking on the "Run now" button.
 
+
+
+<!-- 
+
+Connect dbt to your Github repo
 1. Connect dbt to BigQuery development dataset and to the Github repo by following [these instructions](https://github.com/DataTalksClub/data-engineering-zoomcamp/blob/main/04-analytics-engineering/dbt_cloud_setup.md).
 2. In the IDE windows, press the green <i>Initilize</i> button to create the project files.
 <!-- 3. Inside dbt_project.yml, change the project name both in:
   - the name field and
   - right below the <i>models:</i> block. Cmment or delete the example block at the end. -->
+
+
+<!-- 
 
 ####  Developing <i>log_files_analysis</i> dbt Project
 
@@ -299,7 +327,7 @@ This model contains the aggregated calculations which will be shown on the dashb
 <!-- 
   Run dbt build from jobs menu in dbt cloud. -->
 
-Before going into production, make sure everything is submitted to GitHub.
+
 
 
 ### 6. Building Looker Studio Dashboard
@@ -330,8 +358,6 @@ The final dashboard includes the following diagrams:
   -->
 
 
-<!--
-#2d706c - green -->
 
 
 <!-- ##  9. Log File Analysis Examples
