@@ -119,6 +119,10 @@ tasks:
     sql: |
       DROP TABLE `{{kv('GCP_PROJECT_ID')}}.{{render(vars.table)}}`;
 
+  # - id: delete_gcs_file
+  #   type: io.kestra.plugin.gcp.gcs.Delete
+  #   uri: "{{render(vars.gcs_file)}}"
+
 pluginDefaults:
   - type: io.kestra.plugin.gcp
     values:
@@ -130,4 +134,4 @@ pluginDefaults:
 triggers:
   - id: daily_logs_schedule
     type: io.kestra.plugin.core.trigger.Schedule
-    cron: "0 14 * * *"
+    cron: "12 19 * * *"
