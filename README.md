@@ -217,7 +217,8 @@ Create 2 new empty datasets for your project in BigQuery:
         - Setup a repository > GitHub > Connect GitHub Account > Authorize dbt Cloud > Add repository from: Git Clone > paste the SSH key from your repo. [More details here](https://github.com/DataTalksClub/data-engineering-zoomcamp/blob/main/04-analytics-engineering/dbt_cloud_setup.md#add-github-repository).
         - You will get a deploy key in dbt Cloud. Copy it and head to your GH repo and go to the settings tab. Under security you'll find the menu "D"eploy keys". Click on add key and paste the deploy key provided by dbt cloud. Make sure to tick on "Allow write access".
         - Replicate file contents are in the dbt folder. File structure would look like:
-        TODO
+        
+        <img src="https://github.com/kkumyk/server-logs-daily-data-pipeline/blob/master/doc/dbt-files-overview.png">
 
 <strong>Deploying with dbt Cloud</strong>
 
