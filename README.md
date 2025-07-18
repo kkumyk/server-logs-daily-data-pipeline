@@ -333,7 +333,7 @@ This model contains the aggregated calculations which will be shown on the dashb
 
 ### 6. Building Looker Studio Dashboard
 
-When the production models are ready, you can start building a dashboard. The [Server Access Logs Daily Data Pipeline](https://lookerstudio.google.com/u/0/reporting/260145bd-366d-4ab9-93fa-1e6ac5d010f2/page/R9DYE) dashboard is built using Looker Studio. The process for building a dashboard in Looker Studio can be found in [this video](https://www.youtube.com/watch?v=39nLTs74A3E&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=44).
+When the production models are ready, you can start building a dashboard. The [Server Access Logs Daily Data Pipeline](https://github.com/kkumyk/server-logs-daily-data-pipeline/blob/master/doc/server_access_logs_daily_data_pipeline.png) dashboard is built using Looker Studio. The process for building a dashboard in Looker Studio can be found in [this video](https://www.youtube.com/watch?v=39nLTs74A3E&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=44).
 
 
 
